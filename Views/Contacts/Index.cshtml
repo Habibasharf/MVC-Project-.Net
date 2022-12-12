@@ -1,0 +1,112 @@
+﻿@model IEnumerable<WebApplication1.Models.Category>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2 class="text-primary">Contacts</h2>
+
+<br />
+<a href="@Url.Action("Create")" class="btn btn-primary my-4">
+    <i class="icofont-plus"></i>
+    Add New
+</a>
+
+
+<span id="Message" class="d-none">@TempData["Message"]</span>
+
+
+<div class="alert alert-warning @(Model.Any() ? "d-none" : "")">
+    No books added yet!
+</div>
+
+<table class="table @(!Model.Any() ? "d-none" : "")">
+
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var Contact in Model)
+        {
+            <tr>
+                <td>@Html.ActionLink(Contact.UserName, "Details", "Contacts", new { id = Contact.ID }, null)</td>
+                <td>@Contact.Phone</td>
+                <td>@Contact.Address</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Contacts", new { id = Contact.ID })" class="btn btn-primary">
+                        <i class="icofont-edit"></i>
+                        Edit
+                    </a>
+                    <a href="javascript:;" class="btn btn-danger js-delete" data-id="@Contact.ID">
+                        Delete
+                        <i class="icofont-delete"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+
+@section Scripts
+{
+    <script>
+
+        $(document).ready(function () {
+            toastr.options = {
+                "preventDuplicates": true
+            }
+            var message = $('#Message').text();
+            if (message !== '') {
+                toastr.success(message);
+            }
+            $(".js-delete").on(function () {
+                var btn = $(this);
+                bootbox.confirm({
+                    message: "Are you sure that you need to delete this book?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-outline-secondary'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: '/api/contacts/' + btn.data('id'),
+                                method: 'DELETE',
+                                success: function () {
+                                    if ($('tbody tr').length === 1)
+                                        $('table').fadeOut(function () {
+                                            this.remove();
+                                            $('.alert').removeClass('d-none');
+                                        });
+                                    else
+                                        btn.parents('tr').fadeOut(function () {
+                                            this.remove();
+                                        });
+                                    toastr.success('Contact deleted');
+                                },
+                                error: function () {
+                                    toastr.error('Something went wrong!');
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
+

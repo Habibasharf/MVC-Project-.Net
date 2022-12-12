@@ -1,0 +1,16 @@
+﻿@model WebApplication1.Models.Category
+@{
+    ViewBag.Title = "Details";
+}
+
+<ul class="list-group list-group-item-text" style="width:500px; height:500px; margin-top:50px;">
+    <li class="list-group-item" style="background-color:darkgray; font-size:medium;">
+        <span><b>@Model.UserName </b></span>
+        <a href="@Url.Action("Edit", "Categories", new { id = Model.ID })" class="btn btn-primary" style="margin-left:350px;">
+            <i class="icofont-edit"></i>
+        </a>
+    </li>
+    <li class="list-group-item" style="margin-top:20px;">@Model.Phone</li>
+    <li class="list-group-item" style="margin-top:20px;">@Model.Address</li>
+</ul>
+
